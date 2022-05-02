@@ -4,52 +4,77 @@
     {
         public static void Main()
         {
-            List<int> number = new List<int>() { 1, 2, 3 };
-            List<int> weight = new List<int>() { 1, 2, 10 };
-            RandomNumber randomNumber = new RandomNumber(number, weight);
-            Console.WriteLine(randomNumber.GetNumber());
-            Console.WriteLine(randomNumber.GetNumber());
-            Console.WriteLine(randomNumber.GetNumber());
-            Console.WriteLine(randomNumber.GetNumber());
-            Console.WriteLine(randomNumber.GetNumber());
-            Console.WriteLine(randomNumber.GetNumber());
+            Console.Write("Введите градус и шкалу измерения: ");
+            string input = Console.ReadLine();
+            string[] info = input.Split(" ");
+            AddToList list = new AddToList();
+            List<Converter> converters = list.ListAdd();
+            Console.Clear();
+            foreach (var converter in converters)
+            {
+                if (converter.GetScale() == info[1])
+                {
+                    Console.WriteLine(converter.Converting(info[0]));
+                }
+            }
         }
     }
 
-    class RandomNumber
+    class AddToList
     {
-        private List<int> Number = new List<int>();
-        private List<int> Weight = new List<int>();
-        private List<int> RandomNumbers = new List<int>();
-        private int count = 0;
-        public RandomNumber(List<int> number, List<int> weight)
-        {
-            Number = number;
-            Weight = weight;
-            AddToRandom();
-        }
-        
-        
+        private List<Converter> _converters = new List<Converter>();
 
-        public int GetNumber()
+        public List<Converter> ListAdd()
         {
-            Random random = new Random();
-            int number = random.Next(0, count - 1);
-            return RandomNumbers.ElementAt(number);
+            _converters.Add(new Fahrenheit());
+            _converters.Add(new Kelvin());
+            _converters.Add(new Reomur());
+            return _converters;
+        }
+    }
+    
+    abstract class Converter
+    {
+        public abstract string Converting(string input);
+        public abstract string GetScale();
+    }
+
+    class Fahrenheit : Converter
+    {
+        public override string Converting(string input)
+        {
+            return $"{input}C = {9 * Convert.ToInt32(input) / 5 + 32}F";
         }
 
-        private void AddToRandom()
+        public override string GetScale()
         {
-            for (int i = 0; i < Number.Count; i++)
-            {
-                int weight = Weight.ElementAt(i);
-                for (int j = 0; j < weight; j++)
-                {
-                    RandomNumbers.Add(Number.ElementAt(i));
-                    count++;
-                }
-            }
-            RandomNumbers.Add(1);
+            return "F";
+        }
+    }
+
+    class Kelvin : Converter
+    {
+        public override string Converting(string input)
+        {
+            return $"{input}C = {Convert.ToInt32(input) + 273.15}K";
+        }
+
+        public override string GetScale()
+        {
+            return "K";
+        }
+    }
+
+    class Reomur : Converter
+    {
+        public override string Converting(string input)
+        {
+            return $"{input}C = {4 * Convert.ToInt32(input) / 5}R";
+        }
+
+        public override string GetScale()
+        {
+            return "R";
         }
     }
 }
